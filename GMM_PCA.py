@@ -1,4 +1,5 @@
 # PCA 차원 축소 기법을 이용한 GMM
+# 🚨 PCA를 사용하지 않는 모델이 더 성능이 좋음
 import os
 import numpy as np
 import librosa
