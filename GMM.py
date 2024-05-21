@@ -51,8 +51,8 @@ X = scaler.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # GMM 모델 학습
-gmm_male = GaussianMixture(n_components=32, covariance_type='full', random_state=42)  # 더 많은 컴포넌트와 full 공분산 사용
-gmm_female = GaussianMixture(n_components=32, covariance_type='full', random_state=42)
+gmm_male = GaussianMixture(n_components=64, covariance_type='full', random_state=42)  # 더 많은 컴포넌트와 full 공분산 사용
+gmm_female = GaussianMixture(n_components=64, covariance_type='full', random_state=42)
 
 # 남성, 여성 데이터로 각각의 모델 학습
 gmm_male.fit(X_train[y_train == 0])
