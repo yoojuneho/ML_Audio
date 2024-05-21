@@ -4,11 +4,12 @@ import librosa
 from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
 
 # MFCC 특징을 추출하는 함수
 def extract_mfcc(file_path):
     y, sr = librosa.load(file_path, sr=None)
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=12)
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)  # 더 많은 MFCC 계수 사용
     energy = np.sum(librosa.feature.rms(y=y, frame_length=2048, hop_length=512) ** 2, axis=0)
     delta_mfcc = librosa.feature.delta(mfcc)
     delta2_mfcc = librosa.feature.delta(mfcc, order=2)
@@ -42,12 +43,16 @@ for file_path, label in zip(file_paths, labels):
 X = np.vstack(X)
 y = np.array(y)
 
+# 특징 스케일링
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
 # 학습 및 테스트 데이터 분할
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # GMM 모델 학습
-gmm_male = GaussianMixture(n_components=16, covariance_type='diag', random_state=42)
-gmm_female = GaussianMixture(n_components=16, covariance_type='diag', random_state=42)
+gmm_male = GaussianMixture(n_components=32, covariance_type='full', random_state=42)  # 더 많은 컴포넌트와 full 공분산 사용
+gmm_female = GaussianMixture(n_components=32, covariance_type='full', random_state=42)
 
 # 남성, 여성 데이터로 각각의 모델 학습
 gmm_male.fit(X_train[y_train == 0])
