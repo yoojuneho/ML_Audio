@@ -1,3 +1,4 @@
+# LDA 차원 축소 기법을 이용한 GMM 
 import os
 import numpy as np
 import librosa
@@ -5,6 +6,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 # MFCC 특징을 추출하는 함수
 def extract_mfcc(file_path):
@@ -29,7 +31,7 @@ with open(label_file, 'r') as f:
     for line in f:
         parts = line.strip().split()
         file_paths.append(os.path.join(data_folder, parts[0] + '.wav'))
-        labels.append(0 if parts[1] == 'male' else 1)  # male은 0, feml은 1
+        labels.append(0 if parts[1] == 'male' else 1)  # male은 0, female은 1
 
 # 특징 추출 및 레이블 생성
 X = []
@@ -47,11 +49,15 @@ y = np.array(y)
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
+# LDA 적용
+lda = LinearDiscriminantAnalysis(n_components=1)  # LDA는 클래스 - 1 차원으로 축소
+X_lda = lda.fit_transform(X, y)
+
 # 학습 및 테스트 데이터 분할
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_lda, y, test_size=0.2, random_state=42)
 
 # GMM 모델 학습
-gmm_male = GaussianMixture(n_components=32, covariance_type='full', random_state=42)  # 더 많은 컴포넌트와 full 공분산 사용
+gmm_male = GaussianMixture(n_components=32, covariance_type='full', random_state=42)
 gmm_female = GaussianMixture(n_components=32, covariance_type='full', random_state=42)
 
 # 남성, 여성 데이터로 각각의 모델 학습
@@ -67,4 +73,4 @@ y_pred = np.where(log_likelihood_male > log_likelihood_female, 0, 1)
 
 # 정확도 평가
 accuracy = accuracy_score(y_test, y_pred)
-print(f'Accuracy: {accuracy * 100:.2f}%')
+print(f'LDA Accuracy: {accuracy * 100:.2f}%')
