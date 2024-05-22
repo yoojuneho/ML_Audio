@@ -9,8 +9,8 @@ def load_pcm_file(filename, sr=16000, dtype=np.int16):
     return pcm_data.astype(np.float32), sr
 
 # 폴더 경로
-input_folder = 'C:/ML_Project/raw16k/test'
-output_folder = 'C:/ML_Project/raw16k/test_wav'
+input_folder = 'C:/ML_Project/raw16k/train/MLSH0'
+output_folder = 'C:/ML_Project/raw16k/train/MLSH0_test'
 
 # 출력 폴더가 없으면 생성
 os.makedirs(output_folder, exist_ok=True)
